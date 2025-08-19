@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>個人探索方程式</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', sans-serif;
+            background-color: #ffffe2;
+            color: #4d1f00;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffe2;
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 15px;
+            background-color: #fffff1;
+            border: 2px solid #4d1f00;
+            border-radius: 8px;
+            font-family: 'Microsoft JhengHei', sans-serif;
+            font-size: 16px;
+            color: #4d1f00;
+            resize: vertical;
+            min-height: 50px;
+        }
+
+        textarea {
+            min-height: 80px;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: #6d2f10;
+            box-shadow: 0 0 5px rgba(77, 31, 0, 0.3);
+        }
+
+        button {
+            background-color: #4d1f00;
+            color: #ffffe2;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-family: 'Microsoft JhengHei', sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #6d2f10;
+        }
+
+        button:disabled {
+            background-color: #999;
+            cursor: not-allowed;
+        }
+
+        .admin-btn {
+            width: auto;
+            margin: 10px 5px;
+            display: inline-block;
+        }
+
+        .response-card {
+            background-color: #fffff1;
+            border: 2px solid #4d1f00;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .response-header {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 15px;
+            text-align: center;
+            border-bottom: 1px solid #4d1f00;
+            padding-bottom: 10px;
+        }
+
+        .response-item {
+            margin-bottom: 15px;
+        }
+
+        .response-question {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .response-answer {
+            background-color: #ffffe2;
+            padding: 10px;
+            border-radius: 4px;
+            border-left: 3px solid #4d1f00;
+        }
+
+        .success-message {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 30px 0;
+            padding: 20px;
+            background-color: #fffff1;
+            border: 2px solid #4d1f00;
+            border-radius: 8px;
+        }
+
+        .admin-controls {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .no-responses {
+            text-align: center;
+            font-style: italic;
+            color: #6d2f10;
+            margin: 30px 0;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            h2 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 設定暱稱頁面 -->
+        <div id="nickname-page" class="page active">
+            <h1>個人探索方程式</h1>
+            <div class="form-group">
+                <label for="nickname">請輸入您的暱稱：</label>
+                <input type="text" id="nickname" placeholder="請輸入暱稱" maxlength="20">
+            </div>
+            <button onclick="setNickname()">開始填寫問卷</button>
+        </div>
+
+        <!-- 問卷頁面 -->
+        <div id="questionnaire-page" class="page">
+            <form id="questionnaire-form">
+                <div class="form-group">
+                    <label for="strength">1. 你覺得自己的強項是什麼？（例如：溝通能力、做事效率、合作能力）</label>
+                    <textarea id="strength" placeholder="請描述您的強項..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="personality">2. 你覺得自己的個人特質是什麼？（例如：正直、富有同理心、熱情開朗）</label>
+                    <textarea id="personality" placeholder="請描述您的個人特質..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="goal">3. 在展晟，你希望能達到或收穫什麼？（例如：個人成長、工作挑戰、安穩的生活）</label>
+                    <textarea id="goal" placeholder="請描述您的期望或目標..." required></textarea>
+                </div>
+
+                <button type="submit">提交答案</button>
+            </form>
+        </div>
+
+        <!-- 填答完成頁面 -->
+        <div id="success-page" class="page">
+            <div class="success-message">
+                <h2>填答完成！</h2>
+                <p>感謝您參與個人探索方程式</p>
+                <p>您的答案已同步傳送至主控端</p>
+            </div>
+            <button onclick="resetForm()">重新填寫</button>
+        </div>
+
+        <!-- 管理員頁面 -->
+        <div id="admin-page" class="page">
+            <h2>管理員控制台</h2>
+            <div class="admin-controls">
+                <button class="admin-btn" onclick="refreshResponses()">重新整理</button>
+                <button class="admin-btn" onclick="clearAllResponses()">清除所有回答</button>
+                <button class="admin-btn" onclick="backToHome()">返回首頁</button>
+            </div>
+            <div id="responses-container">
+                <div class="no-responses">目前沒有任何回答</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 儲存所有回答的陣列
+        let responses = [];
+        let currentNickname = '';
+
+        function showPage(pageId) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        function setNickname() {
+            const nickname = document.getElementById('nickname').value.trim();
+            if (!nickname) {
+                alert('請輸入暱稱！');
+                return;
+            }
+            currentNickname = nickname;
+            showPage('questionnaire-page');
+        }
+
+        function showAdmin() {
+            showPage('admin-page');
+            displayResponses();
+        }
+
+        function backToHome() {
+            showPage('nickname-page');
+            document.getElementById('nickname').value = '';
+            currentNickname = '';
+        }
+
+        function resetForm() {
+            document.getElementById('questionnaire-form').reset();
+            showPage('nickname-page');
+            document.getElementById('nickname').value = '';
+            currentNickname = '';
+        }
+
+        document.getElementById('questionnaire-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const strength = document.getElementById('strength').value.trim();
+            const personality = document.getElementById('personality').value.trim();
+            const goal = document.getElementById('goal').value.trim();
+
+            if (!strength || !personality || !goal) {
+                alert('請完整填寫所有問題！');
+                return;
+            }
+
+            // 儲存回答
+            const response = {
+                nickname: currentNickname,
+                timestamp: new Date().toLocaleString('zh-TW'),
+                answers: {
+                    strength: strength,
+                    personality: personality,
+                    goal: goal
+                }
+            };
+
+            // 即時同步功能
+            responses.push(response);
+            
+            // 在控制台記錄同步狀態
+            console.log('✅ 答案已同步至主控端:', response);
+            console.log('📊 目前總回答數:', responses.length);
+            
+            // 如果管理員頁面正在顯示，即時更新顯示
+            const adminPage = document.getElementById('admin-page');
+            if (adminPage.classList.contains('active')) {
+                displayResponses();
+            }
+            
+            // 自動跳轉至填答完成頁面
+            showPage('success-page');
+        });
+
+        function displayResponses() {
+            const container = document.getElementById('responses-container');
+            
+            if (responses.length === 0) {
+                container.innerHTML = '<div class="no-responses">目前沒有任何回答</div>';
+                return;
+            }
+
+            let html = '';
+            responses.forEach((response, index) => {
+                html += `
+                    <div class="response-card">
+                        <div class="response-header">${response.nickname} (${response.timestamp})</div>
+                        <div class="response-item">
+                            <div class="response-question">1. 你覺得自己的強項是什麼？</div>
+                            <div class="response-answer">${response.answers.strength}</div>
+                        </div>
+                        <div class="response-item">
+                            <div class="response-question">2. 你覺得自己的個人特質是什麼？</div>
+                            <div class="response-answer">${response.answers.personality}</div>
+                        </div>
+                        <div class="response-item">
+                            <div class="response-question">3. 在展晟，你希望能達到或收穫什麼？</div>
+                            <div class="response-answer">${response.answers.goal}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function refreshResponses() {
+            displayResponses();
+        }
+
+        function clearAllResponses() {
+            if (confirm('確定要清除所有回答嗎？此操作無法復原。')) {
+                responses = [];
+                displayResponses();
+            }
+        }
+
+        // 頁面載入時初始化
+        window.addEventListener('load', function() {
+            showPage('nickname-page');
+        });
+
+        // 隱藏的管理員模式入口 - 連續點擊標題3次
+        let clickCount = 0;
+        let clickTimer = null;
+
+        function titleClick() {
+            clickCount++;
+            
+            if (clickTimer) {
+                clearTimeout(clickTimer);
+            }
+            
+            if (clickCount === 3) {
+                showAdmin();
+                clickCount = 0;
+            } else {
+                clickTimer = setTimeout(() => {
+                    clickCount = 0;
+                }, 2000); // 2秒內連續點擊3次
+            }
+        }
+
+        // 為標題添加點擊事件
+        document.addEventListener('DOMContentLoaded', function() {
+            const titles = document.querySelectorAll('h1, h2');
+            titles.forEach(title => {
+                title.style.cursor = 'default';
+                title.addEventListener('click', titleClick);
+            });
+        });
+    </script>
+</body>
+</html>
